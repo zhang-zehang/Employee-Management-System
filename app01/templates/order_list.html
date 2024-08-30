@@ -1,0 +1,277 @@
+{% extends 'layout.html' %}
+
+{% block content %}
+    <div class="container">
+        <div style="margin-bottom: 10px">
+            <input type="button" value="Add New Order 1" class="btn btn-success" data-toggle="modal" data-target="#myModal">
+            <input id="btnAdd" type="button" value="Add New Order 2" class="btn btn-success">
+        </div>
+
+        <!-- Order List -->
+        <div class="panel panel-default">
+            <!-- Default panel contents -->
+            <div class="panel-heading">
+                <span class="glyphicon glyphicon-th-list" aria-hidden="true"></span>
+                Order List
+            </div>
+
+            <!-- Table -->
+            <table class="table table-bordered">
+                <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Order ID</th>
+                    <th>Title</th>
+                    <th>Price</th>
+                    <th>Status</th>
+                    <th>Admin</th>
+                    <th>Actions</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for obj in queryset %}
+                    <tr uid="{{ obj.id }}">
+                        <th>{{ obj.id }}</th>
+                        <td>{{ obj.oid }}</td>
+                        <td>{{ obj.title }}</td>
+                        <td>{{ obj.price }}</td>
+                        <td>{{ obj.get_status_display }}</td>
+                        <td>{{ obj.admin.username }}</td>
+                        <td>
+                            <input uid="{{ obj.id }}" type="button" class="btn btn-primary btn-xs btn-edit" value="Edit">
+                            <input uid="{{ obj.id }}" class="btn btn-danger btn-xs btn-delete" type="button" value="Delete">
+                        </td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Pagination -->
+        <ul class="pagination">
+            {{ page_string }}
+        </ul>
+    </div>
+
+    <!-- Add/Edit Order (Modal) -->
+    <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                            aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="myModalLabel">Add New</h4>
+                </div>
+                <div class="modal-body">
+                    <form id="formAdd">
+                        <div class="clearfix">
+                            {% for field in form %}
+                                <div class="col-xs-6">
+                                    <div class="form-group" style="position: relative;margin-bottom: 20px;">
+                                        <label>{{ field.label }}</label>
+                                        {{ field }}
+                                        <span class="error-msg" style="color: red;position: absolute;"></span>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                    <button id="btnSave" type="button" class="btn btn-primary">Save</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Delete Confirmation (Modal) -->
+    <div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+        <div class="modal-dialog" role="document">
+            <div class="alert alert-danger alert-dismissible fade in" role="alert">
+                <h4>Are you sure you want to delete?</h4>
+                <p style="margin: 10px 0;"> Once deleted, all associated data will be removed.</p>
+                <p style="text-align: right;">
+                    <button id="btnConfirmDelete" type="button" class="btn btn-danger">Confirm</button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                </p>
+            </div>
+        </div>
+    </div>
+
+{% endblock %}
+
+{% block js %}
+    <script type="text/javascript">
+        var DELETE_ID;
+        var EDIT_ID;
+
+        $(function () {
+            bindBtnAddEvent();
+            bindBtnSaveEvent();
+            bindBtnDeleteEvent();
+            bindBtnConfirmDeleteEvent();
+            bindBtnEditEvent();
+        });
+
+        function bindBtnAddEvent() {
+            $("#btnAdd").click(function () {
+                // Clear the ID being edited
+                EDIT_ID = undefined;
+
+                // Clear the data in the modal
+                $("#formAdd")[0].reset();
+
+                // Set the title of the modal
+                $("#myModalLabel").text("Add New");
+
+                // Show the modal when the Add button is clicked
+                $('#myModal').modal('show');
+            });
+        }
+
+        function bindBtnSaveEvent() {
+            $("#btnSave").click(function () {
+
+                // Clear error messages
+                $(".error-msg").empty();
+
+                if (EDIT_ID) {
+                    // Edit
+                    doEdit();
+                } else {
+                    // Add
+                    doAdd();
+                }
+            });
+        }
+
+        function doEdit() {
+            // Send a request to the backend (edit Ajax request)
+            $.ajax({
+                url: "/order/edit/" + "?uid=" + EDIT_ID,  //  -> /order/edit/?uid=12
+                type: "post",
+                data: $("#formAdd").serialize(),
+                dataType: "JSON",
+                success: function (res) {
+                    if (res.status) {
+                        // Clear the form $("#formAdd") is a jQuery object -> $("#formAdd")[0] is a DOM object
+                        $("#formAdd")[0].reset();
+
+                        // Close the modal
+                        $('#myModal').modal('hide');
+
+                        // Refresh the page
+                        location.reload();
+
+                    } else {
+                        if (res.tips) {
+                            alert(res.tips);
+                        } else {
+                            // Display error messages in the modal
+                            $.each(res.error, function (name, errorList) {
+                                $("#id_" + name).next().text(errorList[0]);
+                            });
+                        }
+                    }
+                }
+            });
+        }
+
+        function doAdd() {
+            // Send a request to the backend (add Ajax request)
+            $.ajax({
+                url: "/order/add/",
+                type: "post",
+                data: $("#formAdd").serialize(),
+                dataType: "JSON",
+                success: function (res) {
+                    if (res.status) {
+                        // Clear the form $("#formAdd") is a jQuery object -> $("#formAdd")[0] is a DOM object
+                        $("#formAdd")[0].reset();
+
+                        // Close the modal
+                        $('#myModal').modal('hide');
+
+                        // Refresh the page
+                        location.reload();
+
+                    } else {
+                        // Display error messages in the modal
+                        $.each(res.error, function (name, errorList) {
+                            $("#id_" + name).next().text(errorList[0]);
+                        });
+                    }
+                }
+            });
+        }
+
+        function bindBtnDeleteEvent() {
+            $(".btn-delete").click(function () {
+                // Show delete confirmation modal
+                $("#deleteModal").modal('show');
+
+                // Get the current row ID and assign it to the global variable
+                DELETE_ID = $(this).attr("uid");
+            });
+        }
+
+        function bindBtnConfirmDeleteEvent() {
+            $("#btnConfirmDelete").click(function () {
+                $.ajax({
+                    url: "/order/delete/",  //    => /order/delete/?uid=123
+                    type: "GET",
+                    data: {
+                        uid: DELETE_ID
+                    },
+                    dataType: "JSON",
+                    success: function (res) {
+                        if (res.status) {
+                            // Reload the page
+                            location.reload();
+                        } else {
+                            // Delete failed
+                            alert(res.error);
+                        }
+                    }
+                });
+            });
+        }
+
+        function bindBtnEditEvent() {
+            $(".btn-edit").click(function () {
+                // Clear the data in the modal
+                $("#formAdd")[0].reset();
+                var uid = $(this).attr("uid");
+                EDIT_ID = uid;
+
+                // Send an Ajax request to the backend to get the data of the current row /order/detail/?uid=123
+                $.ajax({
+                    url: "/order/detail/",
+                    type: "get",
+                    data: {
+                        uid: uid
+                    },
+                    dataType: "JSON",
+                    success: function (res) {
+                        if (res.status) {
+                            // Assign data to the modal fields
+                            $.each(res.data, function (name, value) {
+                                $("#id_" + name).val(value);
+                            });
+                            // Change the modal title
+                            $("#myModalLabel").text("Edit");
+
+                            // Show the modal when the Edit button is clicked
+                            $('#myModal').modal('show');
+                        } else {
+                            alert(res.error);
+                        }
+                    }
+                });
+            });
+        }
+
+    </script>
+{% endblock %}
+

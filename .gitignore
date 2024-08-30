@@ -1,0 +1,27 @@
+# Django #
+*.log
+*.pot
+*.pyc
+__pycache__/
+local_settings.py
+db.sqlite3
+
+# If using staticfiles #
+staticfiles/
+
+# Media folder #
+media/
+
+# Django stuff:
+*.mo
+*.py[cod]
+__pycache__
+*.swp
+*~
+.idea/
+.vscode/
+*.sqlite3
+
+# If using virtualenv #
+venv/
+ENV/
