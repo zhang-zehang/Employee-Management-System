@@ -35,9 +35,13 @@
     <script src="{% static 'plugins/bootstrap-datepicker/locales/bootstrap-datepicker.zh-CN.min.js' %}"></script>
     <script>
         $(function () {
+            var today = new Date();
+            var nextYear = new Date(today.getFullYear() + 1, today.getMonth(), today.getDate());
             $('#id_create_time').datepicker({
+                
                 format: 'yyyy-mm-dd',
-                startDate: '0',
+                startDate: '2007-09-30',
+                endDate: nextYear,
                 language: "en",  // Changed from "zh-CN" to "en"
                 autoclose: true
             });

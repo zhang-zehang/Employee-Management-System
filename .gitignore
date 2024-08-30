@@ -25,3 +25,5 @@ __pycache__
 # If using virtualenv #
 venv/
 ENV/
+
+.env
