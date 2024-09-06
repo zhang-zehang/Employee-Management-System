@@ -3,7 +3,7 @@ from app01 import models
 
 from app01.utils.pagination import Pagination
 from app01.utils.form import UserModelForm, PrettyModelForm, PrettyEditModelForm
-
+from app01.utils.encrypt import md5
 
 def user_list(request):
     """ User Management """
@@ -36,9 +36,11 @@ def user_add(request):
     ctime = request.POST.get('ctime')
     gender = request.POST.get('gd')
     depart_id = request.POST.get('dp')
+    
+    encrypted_password = md5(pwd)
 
     # Add to the database
-    models.UserInfo.objects.create(name=user, password=pwd, age=age,
+    models.UserInfo.objects.create(username=user, password=encrypted_password, age=age,
                                    account=account, create_time=ctime,
                                    gender=gender, depart_id=depart_id)
 

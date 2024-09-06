@@ -14,7 +14,7 @@ class UserModelForm(BootStrapModelForm):
 
     class Meta:
         model = models.UserInfo
-        fields = ["name", "password", "age", 'account', 'create_time', "gender", "depart"]
+        fields = ["username", "password", "age", 'account', 'create_time', "gender", "depart"]
 
 
 class PrettyModelForm(BootStrapModelForm):

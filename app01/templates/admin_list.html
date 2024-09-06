@@ -38,6 +38,7 @@
                     <th>Username</th>
                     <th>Password</th>
                     <th>Reset Password</th>
+                    <th>Role</th> <!-- 新增角色列 -->
                     <th>Actions</th>
                 </tr>
                 </thead>
@@ -50,6 +51,7 @@
                         <td>
                             <a href="/admin/{{ obj.id }}/reset/">Reset Password</a>
                         </td>
+                        <th>{{ obj.get_role_display }}</th>
                         <td>
                             <a class="btn btn-primary btn-xs" href="/admin/{{ obj.id }}/edit/">Edit</a>
                             <a class="btn btn-danger btn-xs" href="/admin/{{ obj.id }}/delete/">Delete</a>

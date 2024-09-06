@@ -32,41 +32,35 @@ class LoginForm(BootStrapForm):
 
 
 def login(request):
-    """ Login """
     if request.method == "GET":
         form = LoginForm()
         return render(request, 'login.html', {'form': form})
 
     form = LoginForm(data=request.POST)
     if form.is_valid():
-        # Validation successful, retrieve the username and password
-        # {'username': 'wupeiqi', 'password': '123',"code":123}
-        # {'username': 'wupeiqi', 'password': '5e5c3bad7eb35cba3638e145c830c35f',"code":xxx}
-
-        # Verification code validation
         user_input_code = form.cleaned_data.pop('code')
         code = request.session.get('image_code', "")
         if code.upper() != user_input_code.upper():
             form.add_error("code", "Verification code error")
             return render(request, 'login.html', {'form': form})
 
-        # Check in the database if the username and password are correct, get user object or None
-        # admin_object = models.Admin.objects.filter(username=xxx, password=xxx).first()
+        # Check username and password in Admin
         admin_object = models.Admin.objects.filter(**form.cleaned_data).first()
-        if not admin_object:
-            form.add_error("password", "Username or password incorrect")
-            # form.add_error("username", "Username or password incorrect")
-            return render(request, 'login.html', {'form': form})
+        if admin_object:
+            # Role-based redirection
+            request.session["info"] = {'id': admin_object.id, 'name': admin_object.username, 'role': admin_object.role}
+            request.session.set_expiry(60 * 60 * 24 * 7)
+            
+            if admin_object.role == 1:  # Manager
+                return redirect("/admin/list/")  # 跳转到管理员界面
+            else:
+                return redirect("/task/list/")  # 跳转到员工的任务管理页面
 
-        # Username and password are correct
-        # The website generates a random string; writes it into the user's browser cookie; and writes it into the session;
-        request.session["info"] = {'id': admin_object.id, 'name': admin_object.username}
-        # Session can be saved for 7 days
-        request.session.set_expiry(60 * 60 * 24 * 7)
-
-        return redirect("/admin/list/")
+        form.add_error("password", "Username or password is incorrect")
+        return render(request, 'login.html', {'form': form})
 
     return render(request, 'login.html', {'form': form})
+
 
 
 def image_code(request):

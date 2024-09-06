@@ -17,7 +17,7 @@ class AdminModelForm(BootStrapModelForm):
 
     class Meta:
         model = models.Admin
-        fields = ["username", 'password', "confirm_password"]
+        fields = ["username", 'password', "confirm_password", 'role']  # Add 'role' to fields
         widgets = {
             "password": forms.PasswordInput(render_value=True)
         }
@@ -31,14 +31,14 @@ class AdminModelForm(BootStrapModelForm):
         confirm = md5(self.cleaned_data.get("confirm_password"))
         if confirm != pwd:
             raise ValidationError("Passwords do not match")
-        # Return value that will be saved in the database.
         return confirm
 
 
 class AdminEditModelForm(BootStrapModelForm):
     class Meta:
         model = models.Admin
-        fields = ['username']
+        fields = ['username', 'role']  # Add 'role' to fields
+
 
 
 class AdminResetModelForm(BootStrapModelForm):

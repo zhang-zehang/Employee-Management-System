@@ -6,13 +6,22 @@ class XX(models.Model):
     image = models.FileField(verbose_name="Avatar", upload_to="avatar/")
 
 
+from django.db import models
+
 class Admin(models.Model):
-    """ Administrator """
+    ROLE_CHOICES = (
+        (1, 'Manager'),  # 管理员
+        (2, 'Employee'),  # 员工
+    )
+    
     username = models.CharField(verbose_name="Username", max_length=32)
     password = models.CharField(verbose_name="Password", max_length=64)
+    role = models.SmallIntegerField(verbose_name="Role", choices=ROLE_CHOICES, default=2)  # 默认是员工
 
     def __str__(self):
         return self.username
+
+
 
 
 class Department(models.Model):
@@ -25,7 +34,7 @@ class Department(models.Model):
 
 class UserInfo(models.Model):
     """ Employee Table """
-    name = models.CharField(verbose_name="Name", max_length=16)
+    username = models.CharField(verbose_name="Name", max_length=16)
     password = models.CharField(verbose_name="Password", max_length=64)
     age = models.IntegerField(verbose_name="Age")
     account = models.DecimalField(verbose_name="Account Balance", max_digits=10, decimal_places=2, default=0)
