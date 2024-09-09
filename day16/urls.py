@@ -18,7 +18,7 @@ from django.urls import path, re_path
 from django.views.static import serve
 from django.conf import settings
 
-from app01.views import depart, user, pretty, admin, account, task, order, chart, upload, city,leave
+from app01.views import depart, user, pretty, admin, account, task, order, chart, upload, city,leave,gradio
 
 urlpatterns = [
     # path('admin/', admin.site.urls),
@@ -92,5 +92,7 @@ urlpatterns = [
     path('leave/my_requests/', leave.my_leave_requests, name='my_leave_requests'),
     path('leave/request/approve/<int:pk>/', leave.leave_request_approve, name='leave_request_approve'),
     path('leave/request/reject/<int:pk>/', leave.leave_request_reject, name='leave_request_reject'),
+
+    path('embed_gradio/', gradio.embed_gradio_view, name='embed_gradio'),
 ]
 
