@@ -6,8 +6,6 @@ class XX(models.Model):
     image = models.FileField(verbose_name="Avatar", upload_to="avatar/")
 
 
-from django.db import models
-
 class Admin(models.Model):
     ROLE_CHOICES = (
         (1, 'Manager'),  # 管理员
@@ -128,4 +126,25 @@ class City(models.Model):
 
     # Essentially, it's a CharField in the database, automatically saving the data.
     img = models.FileField(verbose_name="Logo", max_length=128, upload_to='city/')
+
+from django.db import models
+from app01.models import Admin
+
+class LeaveRequest(models.Model):
+    employee = models.ForeignKey(Admin, verbose_name="Employee", on_delete=models.CASCADE)
+    reason = models.TextField(verbose_name="Reason")
+    start_date = models.DateField(verbose_name="Start Date", null=True, blank=True)  # 允许为空
+    end_date = models.DateField(verbose_name="End Date", null=True, blank=True)      # 允许为空
+    status_choices = (
+        (1, 'Pending'),
+        (2, 'Approved'),
+        (3, 'Rejected'),
+    )
+    status = models.SmallIntegerField(verbose_name="Status", choices=status_choices, default=1)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return f"Leave request by {self.employee.username} - {self.get_status_display()}"
+
 

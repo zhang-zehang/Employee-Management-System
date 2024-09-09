@@ -1,0 +1,48 @@
+{% extends 'layout.html' %}
+
+{% block content %}
+    <div class="container">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <span class="glyphicon glyphicon-th-list" aria-hidden="true"></span>
+                Leave Requests
+            </div>
+
+            <!-- Table -->
+            <table class="table table-bordered">
+                <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Employee</th>
+                    <th>Reason</th>
+                    <th>Start Date</th>
+                    <th>End Date</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for request in leave_requests %}
+                    <tr>
+                        <th>{{ request.id }}</th>
+                        <td>{{ request.employee.username }}</td>
+                        <td>{{ request.reason }}</td>
+                        <td>{{ request.start_date }}</td>
+                        <td>{{ request.end_date }}</td>
+                        <td>{{ request.get_status_display }}</td>
+                        <td>
+                            {% if request.status == 1 %}
+                                <a href="{% url 'leave_request_approve' request.id %}" class="btn btn-success btn-xs">Approve</a>
+                                <a href="{% url 'leave_request_reject' request.id %}" class="btn btn-danger btn-xs">Reject</a>
+                            {% else %}
+                                <span class="text-muted">No Actions</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+{% endblock %}
+

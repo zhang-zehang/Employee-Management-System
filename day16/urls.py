@@ -18,7 +18,7 @@ from django.urls import path, re_path
 from django.views.static import serve
 from django.conf import settings
 
-from app01.views import depart, user, pretty, admin, account, task, order, chart, upload, city
+from app01.views import depart, user, pretty, admin, account, task, order, chart, upload, city,leave
 
 urlpatterns = [
     # path('admin/', admin.site.urls),
@@ -86,5 +86,11 @@ urlpatterns = [
     # City List
     path('city/list/', city.city_list),
     path('city/add/', city.city_add),
+
+    path('leave/request/', leave.leave_request_create, name='leave_request_create'),
+    path('leave/requests/', leave.leave_request_list, name='leave_request_list'),
+    path('leave/my_requests/', leave.my_leave_requests, name='my_leave_requests'),
+    path('leave/request/approve/<int:pk>/', leave.leave_request_approve, name='leave_request_approve'),
+    path('leave/request/reject/<int:pk>/', leave.leave_request_reject, name='leave_request_reject'),
 ]
 

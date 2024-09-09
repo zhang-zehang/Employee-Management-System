@@ -54,12 +54,13 @@ def login(request):
             if admin_object.role == 1:  # Manager
                 return redirect("/admin/list/")  # 跳转到管理员界面
             else:
-                return redirect("/task/list/")  # 跳转到员工的任务管理页面
+                return redirect("/leave/request/")  # 跳转到员工的请假申请页面
 
         form.add_error("password", "Username or password is incorrect")
         return render(request, 'login.html', {'form': form})
 
     return render(request, 'login.html', {'form': form})
+
 
 
 

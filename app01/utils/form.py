@@ -64,4 +64,23 @@ class PrettyEditModelForm(BootStrapModelForm):
 
         # Validation passed, return the user's input
         return txt_mobile
+    
+
+from django import forms
+from app01.models import LeaveRequest
+
+class LeaveRequestForm(forms.ModelForm):
+    start_date = forms.DateField(
+        widget=forms.DateInput(attrs={'type': 'date'}),  # 使用 HTML5 日期选择器
+        label="Start Date"
+    )
+    end_date = forms.DateField(
+        widget=forms.DateInput(attrs={'type': 'date'}),  # 使用 HTML5 日期选择器
+        label="End Date"
+    )
+
+    class Meta:
+        model = LeaveRequest
+        fields = ['reason', 'start_date', 'end_date']  # 添加开始和结束时间
+
 
